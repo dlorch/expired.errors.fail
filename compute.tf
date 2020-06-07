@@ -33,7 +33,7 @@ sudo -E add-apt-repository ppa:certbot/certbot
 sudo -E apt-get install -y python-certbot-nginx
 
 # make sure to:
-# - give compute service account "Secret Manager Secret Accessor " privileges
+# - give compute service account "Secret Manager Secret Accessor" privileges
 # - grant compute instance "Allow full access to all Cloud APIs"
 
 cd / && gcloud secrets versions access latest --secret="expired-errors-fail_letsencrypt-tar" | sudo tar xf -
