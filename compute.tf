@@ -1,5 +1,5 @@
 resource "google_compute_instance_template" "expired-template" {
-  name         = "expired-${random_integer.instance-template-id.result}"
+  name         = "expired-${random_id.instance-template-id.hex}"
   machine_type = "f1-micro"
   region       = "us-east1"
 
@@ -58,9 +58,8 @@ EOF
   }
 }
 
-resource "random_integer" "instance-template-id" {
-  min = 1
-  max = 99999
+resource "random_id" "instance-template-id" {
+  byte_length = 3
 }
 
 # google_compute_region_instance_group_manager is regional (multi-zone)
@@ -81,10 +80,13 @@ resource "google_compute_region_instance_group_manager" "expired-group" {
   target_size        = "1"
 }
 
+# this returns the instance group object, where the instances are referenced but not "expanded",
+# thus a second lookup is necessary to retrieve the instance properties
 data "google_compute_region_instance_group" "expired-instance-group" {
   self_link = google_compute_region_instance_group_manager.expired-group.instance_group
 }
 
+# TODO how do you retrieve the IPs of *all* instances in the instance group?
 data "google_compute_instance" "expired-instance" {
   self_link = data.google_compute_region_instance_group.expired-instance-group.instances.0.instance
 }
