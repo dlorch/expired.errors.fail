@@ -1,5 +1,5 @@
 resource "google_compute_instance_template" "expired-template" {
-  name         = "expired"
+  name         = "expired-${random_integer.instance-template-id.result}"
   machine_type = "f1-micro"
   region       = "us-east1"
 
@@ -38,6 +38,8 @@ sudo -E apt-get install -y python-certbot-nginx
 
 cd / && gcloud secrets versions access latest --secret="expired-errors-fail_letsencrypt-tar" | sudo tar xf -
 
+# these aren't secrets, but otherwise I would have to create a Cloud Store bucket just
+# for these two assets...
 gcloud secrets versions access latest --secret="expired-errors-fail_nginx-conf" > /tmp/default
 sudo -E mv /tmp/default /etc/nginx/sites-available/default
 sudo -E service nginx restart
@@ -45,6 +47,20 @@ sudo -E service nginx restart
 gcloud secrets versions access latest --secret="expired-errors-fail_index-html" > /tmp/index.html
 sudo -E mv /tmp/index.html /var/www/html/index.html
 EOF
+
+  # by default, terraform will first destroy an entity before re-creating it. This
+  # does not work for instances templates, as they cannot be deleted while still in
+  # use by a instance group. Therefore, each time first a new template with a random
+  # ID is created, then assigned to the instance group, and finally the old template
+  # deleted.
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "random_integer" "instance-template-id" {
+  min = 1
+  max = 99999
 }
 
 # google_compute_region_instance_group_manager is regional (multi-zone)
