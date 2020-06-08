@@ -1,7 +1,7 @@
 resource "google_compute_instance_template" "expired-template" {
   name         = "expired-${random_id.instance-template-id.hex}"
   machine_type = "f1-micro"
-  region       = "us-east1"
+  region       = "us-east1" # https://cloud.google.com/free/ ;-)
 
   tags = ["http-server", "https-server"]
 
