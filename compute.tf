@@ -29,8 +29,10 @@ export DEBIAN_FRONTEND=noninteractive
 sudo -E iptables -A INPUT -p icmp --icmp-type echo-request -m statistic --mode random --probability 0.5 -j DROP
 sudo -E apt-get update && apt-get install -y iptables-persistent nginx
 sudo -E systemctl enable nginx
-sudo -E add-apt-repository ppa:certbot/certbot
-sudo -E apt-get install -y python-certbot-nginx
+
+# deliberately don't update certificates
+#sudo -E add-apt-repository ppa:certbot/certbot
+#sudo -E apt-get install -y python-certbot-nginx
 
 # make sure to:
 # - give compute service account "Secret Manager Secret Accessor" privileges
