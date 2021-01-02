@@ -1,5 +1,5 @@
 steps:
-- name: 'hashicorp/terraform:0.12.26'
+- name: 'hashicorp/terraform:0.13.5'
   args: ['init']
-- name: 'hashicorp/terraform:0.12.26'
+- name: 'hashicorp/terraform:0.13.5'
   args: ['apply', '-auto-approve']
